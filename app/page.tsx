@@ -30,7 +30,7 @@ export default function Home() {
       >
         <div className="flex flex-col gap-1 w-full max-w-xl">
           <label htmlFor="search">
-            <p>Item:</p>
+            <p>Livro:</p>
           </label>
           <input
             className="rounded-md focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500 "
