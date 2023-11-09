@@ -2,6 +2,10 @@ import { Book } from "@/models/Book";
 import { IBookStoreScrapper } from "./interfaces/IBookStoreScrapper";
 import { scrapper } from "@/config/api";
 import * as cheerio from "cheerio";
+import {
+  filterBooksByPrice,
+  filterBooksByTitle,
+} from "@/utils/validate-scrap-data";
 
 export class AmazonScrapper implements IBookStoreScrapper {
   url: string = "https://www.amazon.com.br";
@@ -15,7 +19,7 @@ export class AmazonScrapper implements IBookStoreScrapper {
     const html = await this.search(search);
     const $ = cheerio.load(html);
 
-    const results: Book[] = [];
+    const books: Book[] = [];
     $("div.puis-card-container").each((_, el) => {
       const title = $(el).find("h2").text();
       const link = this.url + $(el).find("h2 a").attr("href") ?? "";
@@ -28,9 +32,12 @@ export class AmazonScrapper implements IBookStoreScrapper {
       const price = Number(priceValue);
 
       const data: Book = { title, price, siteName: "Amazon", link };
-      results.push(data);
+      books.push(data);
     });
 
-    return results;
+    return books
+      .filter(filterBooksByPrice)
+
+      .filter((book) => filterBooksByTitle(book, search));
   }
 }
