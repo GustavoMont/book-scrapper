@@ -1,18 +1,20 @@
 "use client";
+import { Results } from "@/components/Home/Results";
 import { SearchIcon } from "@/components/Icons/SearchIcon";
 import { LoadingResults } from "@/components/Layout/LoadingResults";
 import { api } from "@/config/api";
+import { Book } from "@/models/Book";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 export default function Home() {
-  const [data, setData] = useState<{ hello: string }>({ hello: "world" });
+  const [data, setData] = useState<Book[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { register, handleSubmit } = useForm<{ search: string }>();
 
   const onSubmit = async (data: { search: string }) => {
     setIsLoading(true);
-    const { data: res } = await api.get<{ hello: string }>("/search", {
+    const { data: res } = await api.get<Book[]>("/search", {
       params: { query: data.search },
     });
     setData(res);
@@ -43,21 +45,15 @@ export default function Home() {
           className="py-2 transition-all duration-100 ease-in-out flex gap-4 items-center self-end px-5 rounded-full text-center bg-emerald-400 text-white hover:bg-emerald-600 hover:scale-105 trasnform active:scale-95"
         >
           {isLoading ? (
-            <svg
-              className="animate-spin h-5 w-5 mr-3 ..."
-              viewBox="0 0 24 24"
-            />
+            <div className="animate-spin h-6 w-6 aspect-square rounded-full border-l border-t border-white" />
           ) : (
-            <SearchIcon />
+            <SearchIcon isLoading={isLoading} />
           )}
           Pesquisar
         </button>
       </form>
-      <hr className="border-emerald-500 my-10" />
-      <section className="flex flex-col gap-5 ">
-        <h3 className="text-2xl text-emerald-500">Resultados</h3>
-        {isLoading ? <LoadingResults /> : null}
-      </section>
+      <hr className="border-emerald-500 my-7" />
+      <Results books={data} isLoading={isLoading} />
     </>
   );
 }

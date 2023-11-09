@@ -1,6 +1,10 @@
 import React from "react";
 
-export const SearchIcon = () => {
+interface Props extends React.SVGProps<SVGSVGElement> {
+  isLoading?: boolean;
+}
+
+export const SearchIcon: React.FC<Props> = ({ isLoading, ...props }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -8,7 +12,8 @@ export const SearchIcon = () => {
       viewBox="0 0 24 24"
       strokeWidth={1.5}
       stroke="currentColor"
-      className="w-6 h-6"
+      className={`w-6 h-6 ${isLoading ? "animate-spin" : ""}`}
+      {...props}
     >
       <path
         strokeLinecap="round"
