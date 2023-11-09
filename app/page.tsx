@@ -37,7 +37,9 @@ export default function Home() {
           <input
             className="rounded-md focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500 "
             type="text"
-            {...register("search")}
+            {...register("search", {
+              required: "Pesquise algum livro",
+            })}
           />
         </div>
         <button
