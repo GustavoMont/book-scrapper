@@ -1,25 +1,59 @@
 "use client";
 import { Results } from "@/components/Home/Results";
 import { SearchIcon } from "@/components/Icons/SearchIcon";
-import { LoadingResults } from "@/components/Layout/LoadingResults";
+import { XIcon } from "@/components/Icons/XIcon";
+import { Button } from "@/components/common/Button";
 import { api } from "@/config/api";
 import { Book } from "@/models/Book";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 export default function Home() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const book = searchParams.get("book");
+  const hasSearch = searchParams.has("book");
   const [data, setData] = useState<Book[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const { register, handleSubmit } = useForm<{ search: string }>();
+  const { register, handleSubmit } = useForm<{ search: string }>({
+    defaultValues: {
+      search: book ?? "",
+    },
+  });
 
-  const onSubmit = async (data: { search: string }) => {
-    setIsLoading(true);
-    const { data: res } = await api.get<Book[]>("/search", {
-      params: { query: data.search },
+  const getBooks = async (search: string) => {
+    const { data: books } = await api.get<Book[]>("/search", {
+      params: { query: search },
     });
-    setData(res);
+    return books;
+  };
+
+  const onSubmit = async ({ search }: { search: string }) => {
+    setIsLoading(true);
+
+    const params = new URLSearchParams(searchParams);
+    params.set("book", search);
+
+    router.replace(`/?${params.toString()}`);
+
     setIsLoading(false);
   };
+
+  const onClearSearch = () => {
+    router.replace("/");
+  };
+
+  useEffect(() => {
+    if (book) {
+      setIsLoading(true);
+      getBooks(book)
+        .then((books) => {
+          setData(books);
+        })
+        .finally(() => setIsLoading(false));
+    }
+  }, [book]);
 
   return (
     <>
@@ -42,20 +76,31 @@ export default function Home() {
             })}
           />
         </div>
-        <button
-          type="submit"
-          className="py-2 transition-all duration-100 ease-in-out flex gap-4 items-center self-end px-5 rounded-full text-center bg-emerald-400 text-white hover:bg-emerald-600 hover:scale-105 trasnform active:scale-95"
+        <Button
+          icon={<SearchIcon isLoading={isLoading} />}
+          isLoading={isLoading}
         >
-          {isLoading ? (
-            <div className="animate-spin h-6 w-6 aspect-square rounded-full border-l border-t border-white" />
-          ) : (
-            <SearchIcon isLoading={isLoading} />
-          )}
           Pesquisar
-        </button>
+        </Button>
+
+        {hasSearch ? (
+          <Button
+            onClick={onClearSearch}
+            type="reset"
+            icon={<XIcon />}
+            color="danger"
+          >
+            Limpar pesquisa
+          </Button>
+        ) : null}
       </form>
       <hr className="border-emerald-500 my-7" />
-      <Results books={data} isLoading={isLoading} />
+      <Results
+        clearSearch={() => {}}
+        hasNoSearch
+        books={data}
+        isLoading={isLoading}
+      />
     </>
   );
 }
