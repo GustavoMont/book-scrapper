@@ -3,11 +3,12 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Footer } from "@/components/Layout/Footer";
 import { Header } from "@/components/Layout/Header";
+import Head from "next/head";
 
 const poppins = Poppins({ subsets: ["latin"], weight: ["400", "500", "600"] });
 
 export const metadata: Metadata = {
-  title: "Scrapper.JS",
+  title: "BookScrapper",
   description: "Um dos scrappers já feitos",
 };
 
