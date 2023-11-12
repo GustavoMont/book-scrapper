@@ -1,6 +1,8 @@
 import axios from "axios";
 
-const baseURL = process.env.VERCEL_URL ?? "http://localhost:3000/api";
+const DOMAIN = process.env.VERCEL_URL ?? "http://localhost:3000";
+
+const baseURL = `${DOMAIN}/api`;
 
 export const api = axios.create({
   baseURL,
