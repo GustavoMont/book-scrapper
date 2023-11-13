@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const DOMAIN = process.env.VERCEL_URL ?? "http://localhost:3000";
+const DOMAIN = process.env.NEXT_PUBLIC_API ?? "http://localhost:3000";
 
 const baseURL = `${DOMAIN}/api`;
 
